@@ -14,34 +14,30 @@ def home(request):
     return render(request, 'home.html')
 
 @login_required
-@login_required
 def dashboard(request):
-    """Tableau de bord personnalisé selon le rôle"""
+    """
+    Tableau de bord personnalisé selon le rôle de l'utilisateur
+    - Patients: voir leurs prochains RDV
+    - Médecins: voir leur agenda
+    - Admins: voir des statistiques
+    """
     context = {}
 
-    try:
-        if request.user.role == 'PATIENT':
-            # Vérifie si le profil patient existe, sinon le crée
-            patient_profile, created = Patient.objects.get_or_create(user=request.user)
-            appointments = Appointment.objects.filter(patient=patient_profile)
-            context['appointments'] = appointments[:5]
+    if request.user.role == 'PATIENT':
+        # Affiche les 5 prochains RDV pour les patients
+        appointments = Appointment.objects.filter(patient=request.user.patient_profile)
+        context['appointments'] = appointments[:5]
 
-        elif request.user.role == 'DOCTOR':
-            # Vérifie si le profil docteur existe
-            if hasattr(request.user, 'doctor_profile'):
-                appointments = Appointment.objects.filter(doctor=request.user.doctor_profile)
-                context['appointments'] = appointments[:5]
-            else:
-                messages.warning(request, "Votre profil médecin n'est pas complètement configuré")
+    elif request.user.role == 'DOCTOR':
+        # Affiche les 5 prochains RDV pour les médecins
+        appointments = Appointment.objects.filter(doctor=request.user.doctor_profile)
+        context['appointments'] = appointments[:5]
 
-        elif request.user.role == 'ADMIN':
-            context['doctor_count'] = Doctor.objects.count()
-            context['patient_count'] = Patient.objects.count()
-            context['appointment_count'] = Appointment.objects.count()
-
-    except Exception as e:
-        messages.error(request, f"Une erreur est survenue: {str(e)}")
-        logger.error(f"Dashboard error for user {request.user.id}: {str(e)}")
+    elif request.user.role == 'ADMIN':
+        # Affiche des statistiques pour les admins
+        context['doctor_count'] = Doctor.objects.count()
+        context['patient_count'] = Patient.objects.count()
+        context['appointment_count'] = Appointment.objects.count()
 
     return render(request, 'dashboard.html', context)
 
