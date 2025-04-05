@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+
+{% block title %}Tableau de bord - UniSalute{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <h1><i class="fas fa-tachometer-alt me-2"></i>Tableau de bord</h1>
+    </div>
+</div>
+
+{% if user.role == 'ADMIN' %}
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card text-white bg-primary">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h5 class="card-title">Médecins</h5>
+                        <h2 class="mb-0">{{ doctor_count }}</h2>
+                    </div>
+                    <i class="fas fa-user-md fa-3x"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card text-white bg-success">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h5 class="card-title">Patients</h5>
+                        <h2 class="mb-0">{{ patient_count }}</h2>
+                    </div>
+                    <i class="fas fa-users fa-3x"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card text-white bg-info">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h5 class="card-title">Rendez-vous</h5>
+                        <h2 class="mb-0">{{ appointment_count }}</h2>
+                    </div>
+                    <i class="fas fa-calendar-check fa-3x"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0">
+            <i class="fas fa-calendar me-2"></i>
+            Mes prochains rendez-vous
+        </h5>
+    </div>
+    <div class="card-body">
+        {% if appointments %}
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>{% if user.role == 'PATIENT' %}Médecin{% else %}Patient{% endif %}</th>
+                        <th>Type</th>
+                        <th>Statut</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for appointment in appointments %}
+                    <tr>
+                        <td>{{ appointment.date_time|date:"d/m/Y H:i" }}</td>
+                        <td>
+                            {% if user.role == 'PATIENT' %}
+                                Dr. {{ appointment.doctor.user.get_full_name }}
+                            {% else %}
+                                {{ appointment.patient.user.get_full_name }}
+                            {% endif %}
+                        </td>
+                        <td>{{ appointment.get_appointment_type_display }}</td>
+                        <td>
+                            <span class="badge bg-{% if appointment.status == 'CONFIRMED' %}success{% elif appointment.status == 'CANCELLED' %}danger{% else %}warning{% endif %}">
+                                {{ appointment.get_status_display }}
+                            </span>
+                        </td>
+                        <td>
+                            <a href="{% url 'appointment_detail' appointment.id %}" class="btn btn-sm btn-info" title="Détails">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="alert alert-info mb-0">
+            Aucun rendez-vous prévu pour le moment.
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+
+{% block title %}Inscription - UniSanté{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card border-0 shadow">
+                <div class="card-header bg-primary text-white py-3">
+                    <h3 class="mb-0 text-center"><i class="fas fa-user-plus me-2"></i>Créer un compte</h3>
+                </div>
+
+                <div class="card-body p-4">
+                    <form method="post" class="needs-validation" novalidate>
+                        {% csrf_token %}
+
+                        <div class="row g-3">
+                            <!-- Rôle -->
+                            <div class="col-12">
+                                <label for="id_role" class="form-label">Vous êtes :</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-user-tag"></i></span>
+                                    {{ form.role }}
+                                </div>
+                            </div>
+
+                            <!-- Prénom -->
+                            <div class="col-md-6">
+                                <label for="id_first_name" class="form-label">Prénom</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                    {{ form.first_name }}
+                                </div>
+                            </div>
+
+                            <!-- Nom -->
+                            <div class="col-md-6">
+                                <label for="id_last_name" class="form-label">Nom</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                    {{ form.last_name }}
+                                </div>
+                            </div>
+
+                            <!-- Email -->
+                            <div class="col-12">
+                                <label for="id_email" class="form-label">Email</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                                    {{ form.email }}
+                                </div>
+                            </div>
+
+                            <!-- Nom d'utilisateur -->
+                            <div class="col-12">
+                                <label for="id_username" class="form-label">Nom d'utilisateur</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-at"></i></span>
+                                    {{ form.username }}
+                                </div>
+                            </div>
+
+                            <!-- Mot de passe -->
+                            <div class="col-md-6">
+                                <label for="id_password1" class="form-label">Mot de passe</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                                    {{ form.password1 }}
+                                    <button class="btn btn-outline-secondary toggle-password" type="button">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </div>
+                                <div class="form-text">8 caractères minimum</div>
+                            </div>
+
+                            <!-- Confirmation mot de passe -->
+                            <div class="col-md-6">
+                                <label for="id_password2" class="form-label">Confirmation</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                                    {{ form.password2 }}
+                                </div>
+                            </div>
+
+                            <!-- Bouton d'inscription -->
+                            <div class="col-12 mt-4">
+                                <button type="submit" class="btn btn-primary w-100 py-2">
+                                    <i class="fas fa-user-plus me-2"></i>S'inscrire
+                                </button>
+                            </div>
+
+                            <!-- Lien vers connexion -->
+                            <div class="col-12 text-center mt-3">
+                                <p class="mb-0">Déjà un compte ? <a href="{% url 'login' %}" class="text-primary">Se connecter</a></p>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .card {
+        border-radius: 10px;
+        overflow: hidden;
+    }
+    .card-header {
+        border-radius: 0 !important;
+    }
+    .form-control:focus, .form-select:focus {
+        border-color: #0d6efd;
+        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+    }
+    .input-group-text {
+        background-color: #f8f9fa;
+    }
+    #id_role {
+        padding: 0.375rem 0.75rem;
+    }
+</style>
+
+<script>
+// Fonction pour afficher/masquer le mot de passe
+document.querySelectorAll('.toggle-password').forEach(button => {
+    button.addEventListener('click', function() {
+        const input = this.closest('.input-group').querySelector('input');
+        const icon = this.querySelector('i');
+        if (input.type === 'password') {
+            input.type = 'text';
+            icon.classList.replace('fa-eye', 'fa-eye-slash');
+        } else {
+            input.type = 'password';
+            icon.classList.replace('fa-eye-slash', 'fa-eye');
+        }
+    });
+});
+</script>
+{% endblock %}
